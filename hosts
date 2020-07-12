@@ -1,0 +1,6 @@
+[webservers]
+webserver1 ansible_python_interpreter=/usr/bin/python3
+webserver1 ansible_python_interpreter=/usr/bin/python3
+
+[mysqlservers]
+mysqlserver ansible_python_interpreter=/usr/bin/python3

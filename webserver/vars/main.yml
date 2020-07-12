@@ -1,0 +1,4 @@
+# vars file for webserver
+packages: ['mcrypt', 'php', 'php-fpm', 'php-mysql', 'php-curl', 'php-dom', 'nginx', 'certbot', 'python3-certbot-nginx']
+server_name: dummy.co.za
+project: dummy

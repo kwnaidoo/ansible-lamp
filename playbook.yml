@@ -1,0 +1,20 @@
+- hosts: all
+  become: true
+  vars_files:
+    - barebone-server/vars/main.yml
+  roles:
+    - barebone-server
+
+- hosts: webservers
+  become: true
+  vars_files:
+    - webserver/vars/main.yml
+  roles:
+    - webserver
+
+- hosts: mysqlservers
+  become: true
+  vars_files:
+    - mysql-server/vars/main.yml
+  roles:
+    - mysql-server

@@ -1,0 +1,13 @@
+# tasks file for mysql-server
+
+# Install mysql server instance
+- name: Update apt
+  apt: update_cache=yes
+
+- name: Install required system packages
+  apt: name={{ packages }} state=present
+
+- name: Set the root password
+  mysql_user:
+    name: root
+    password: "{{ mysql_root_password }}"

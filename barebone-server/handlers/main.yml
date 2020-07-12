@@ -1,0 +1,9 @@
+# handlers file for barebone-server
+- name: restart sshd
+  service: name=sshd state=restarted
+
+# start firewall
+- name: restart ufw
+  service:
+    name: ufw
+    state: restarted

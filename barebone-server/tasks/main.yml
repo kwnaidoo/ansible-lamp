@@ -1,0 +1,65 @@
+# Sudo Group Setup
+- name: Setup "staff" group that all SSH users will be grouped under
+  group:
+    name: staff
+    state: present
+
+- name: Allow 'staff' group to have passwordless sudo
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    regexp: '^%staff'
+    line: '%staff ALL=(ALL) NOPASSWD: ALL'
+    validate: '/usr/sbin/visudo -cf %s'
+
+# User + Key Setup
+- name: Create a new regular user with sudo privileges
+  user:
+    name: "{{ ssh_user }}"
+    state: present
+    groups: staff
+    append: true
+    create_home: true
+    shell: /bin/bash
+    
+- name: Set authorized key for remote user
+  authorized_key:
+    user: "{{ ssh_user }}"
+    state: present
+    key: "{{ copy_local_key }}"
+
+- name: Disable root login
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    state: present
+    regexp: '^#?PermitRootLogin'
+    line: 'PermitRootLogin no'
+
+- name: Disable password authentication
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    state: present
+    regexp: '^#?PasswordAuthentication'
+    line: 'PasswordAuthentication no'
+  notify:
+   - restart sshd
+
+# Install Packages
+- name: Update apt
+  apt: update_cache=yes
+
+- name: Install required system packages
+  apt: name={{ sys_packages }} state=latest
+
+# Security
+- name: UFW - Allow SSH connections
+  ufw:
+    rule: allow
+    name: OpenSSH 
+- name: UFW - Deny all other incoming traffic by default
+  ufw:
+    state: enabled
+    policy: deny
+    direction: incoming
+  notify:
+   - restart ufw

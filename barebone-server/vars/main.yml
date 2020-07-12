@@ -1,0 +1,5 @@
+---
+# vars file for barebone-server
+ssh_user: webuser
+copy_local_key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+sys_packages: ['software-properties-common','curl', 'vim', 'git', 'ufw', 'nano', 'htop']

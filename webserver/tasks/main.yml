@@ -1,0 +1,44 @@
+# tasks file for webserver
+
+# Install Packages
+- name: Update apt
+  apt: update_cache=yes
+
+- name: Install required system packages
+  apt: name={{ packages }} state=latest
+
+# Will setup the main web directory
+- name: Creates www director
+  file:
+    path: /var/www
+    owner: www-data
+    group: www-data
+    mode: 0755
+    state: directory
+
+# Sets up basic template
+- name: Adds a basic NGINX conf file
+  template:
+    src: ./templates/default.conf
+    dest: "/etc/nginx/sites-available/{{ server_name }}.conf"
+  notify:
+    - reload nginx
+
+# Configure firewall
+- name: (NGINX) Open the HTTP port on the firewall
+  ufw:
+    rule: allow
+    port: 80
+    proto: tcp
+    direction: in
+  notify:
+    - reload ufw
+
+- name: (NGINX) Open the HTTPS port on the firewall
+  ufw:
+    rule: allow
+    port: 443
+    proto: tcp
+    direction: in
+  notify:
+    - reload ufw
