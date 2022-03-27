@@ -5,9 +5,13 @@ set -e
 
 sudo apt-get update -y
 sudo apt-get upgrade -y
+sudo apt-get install -y software-properties-common apt-transport-https wget curl
+sudo add-apt-repository ppa:ondrej/php -y
+sudo apt-get update
 
 # install PHP, Mysql and redis
-sudo apt install unzip zsh software-properties-common apt-transport-https wget curl git php php-mysql php-xml php-gd php-zip php-mbstring mariadb-server redis-server uidmap -y
+sudo apt install unzip zsh  git php7.4 php7.4-mysql php7.4-xml php7.4-gd php7.4-zip php7.4-mbstring php7.4-redis php7.4-curl mariadb-server redis-server uidmap -y
+sudo apt-get purge apache2 -y # using docker instead
 
 # install VScode and edge
 sudo wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add -
@@ -51,7 +55,7 @@ nvm install --lts
 curl -sL https://get.docker.com/ -o install_docker.sh
 chmod +x install_docker.sh
 sudo bash install_docker.sh
-sudo dockerd-rootless-setuptool.sh install
+dockerd-rootless-setuptool.sh install
 
 sudo groupadd docker
 sudo usermod -aG docker $USER
@@ -67,6 +71,12 @@ curl -sL https://github.com/suciptoid/postman-appimage/releases/download/contino
 chmod +x Postman
 cd /usr/local/bin && sudo ln -s /home/$USER/Applications/Postman
 cd /home/$USER/
+
+# MYSQL user ###
+sudo systemctl start mysql
+sudo mysql -e "create user $USER@localhost identified by '1234';"
+sudo mysql -e "GRANT ALL PRIVILEGES ON *.* TO tom@localhost;"
+sudo mysql -e "FLUSH PRIVILEGES;"
 
 ## Prettify default terminal ##
 
@@ -85,4 +95,9 @@ curl -sS https://starship.rs/install.sh -o install_starship.sh
 chmod +x install_starship.sh
 ./install_starship.sh
 
+# generate ssh keys
+ssh-keygen -f /home/$USER/.ssh/id_rsa
 
+# Timshift
+sudo apt install -y timeshift
+sudo timeshift --create --rsync --yes --verbose --scripted
